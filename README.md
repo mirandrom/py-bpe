@@ -1,5 +1,10 @@
 # py-bpe
-Pure python implementation of byte pair encoding (subword tokenization)
+Pure python implementation of byte pair encoding (subword tokenization).
+
+Focuses on:
+- Reversible tokenization/encoding;
+- Customizable and scalable learning of subword vocabulary from corpus;
+- Ease of use in downstream tasks;
 
 
 ## Examples
