@@ -104,11 +104,8 @@ class BpeTokenizer:
 
     def _preprocess(self, text: str) -> str:
         """Preprocess corpus for learning BPEs.
-
         Note: this preprocessing is not reversible.
-
         Adapted from: https://docs.fast.ai/text.transform.html#Tokenizer.process_text
-
         """
         if self.preprocess_args['lowercase']:
             text = text.lower()
@@ -138,11 +135,9 @@ class BpeTokenizer:
 
     def _count_words(self, corpus: str, args: Dict) -> Tuple[Counter, Counter]:
         """Obtains corpus word counts used to learn BPE.
-
         A word is a continuous sequence of "pairable" characters.
         Tokens made from unpairable characters are also counted in case we want
         to include them by frequency instead of all by default.
-
         :param corpus: (str) text to learn BPEs from
         :param pairable_chars: (str) regex char set e.g. "a-z" ([ ] not included)
         :param unpairable_chars: (str) regex exclusion char set e.g. "0-9.?!'amp;'" ([ ] and ^ not included)
@@ -174,7 +169,6 @@ class BpeTokenizer:
 
     def _init_vocab(self, corpus: str, word_counts: Counter, args: Dict) -> Tuple[Dict[str, int], List[str]]:
         """Initialize vocabulary based on predefined tokens (use temporary lookup set to avoid duplicates)
-
         """
         tmp_vocab_itos = [v for v in self.meta_tokens.values()] + [v for v in self.preprocess_tokens.values()] + \
                      args['required_chars'] + args['required_subwords'] + args['required_words']
@@ -254,7 +248,13 @@ class BpeTokenizer:
         return text
 
     def encode(self, text: str) -> List[int]:
-        return [self.vocab_stoi[s] for s in self.tokenize(text)]
+        token_nums = []
+        for s in self.tokenize(text):
+            if s not in self.vocab_stoi:
+                token_nums.append(self.vocab_stoi[self.meta_tokens['unk']])
+            else:
+                token_nums.append(self.vocab_stoi[s])
+        return token_nums
 
     def decode(self, encodings: List[int]) -> str:
         return self.detokenize([self.vocab_itos[i] for i in encodings])
